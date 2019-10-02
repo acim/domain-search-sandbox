@@ -15,7 +15,7 @@ const (
 )
 
 func main() {
-	data := short("frog", []string{"com", "net", "de"})
+	data := twowords("cloud", []string{"com"})
 
 	var wg sync.WaitGroup
 	for i := 0; i < concurrency; i++ {
@@ -126,6 +126,22 @@ func short2(word string, tld string) <-chan string {
 				dc <- word + string(i) + string(j) + tld
 				dc <- string(i) + string(j) + word + tld
 				dc <- string(i) + word + string(j) + tld
+			}
+		}
+		close(dc)
+	}()
+
+	return dc
+}
+
+func twowords(word string, tlds []string) <-chan string {
+	dc := make(chan string)
+
+	go func() {
+		for _, i := range letters5() {
+			for _, tld := range tlds {
+				dc <- word + string(i) + "." + tld
+				dc <- string(i) + word + "." + tld
 			}
 		}
 		close(dc)

@@ -1085,7 +1085,7 @@ func letters4() []string {
 		"cool",
 		"cope",
 		"copy",
-		"CORE",
+		"core",
 		"cost",
 		"crew",
 		"crop",

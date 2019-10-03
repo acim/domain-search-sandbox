@@ -15,7 +15,7 @@ const (
 )
 
 func main() {
-	data := twowords("cloud", []string{"com"})
+	data := oneword([]string{"sh"})
 
 	var wg sync.WaitGroup
 	for i := 0; i < concurrency; i++ {
@@ -142,6 +142,21 @@ func twowords(word string, tlds []string) <-chan string {
 			for _, tld := range tlds {
 				dc <- word + string(i) + "." + tld
 				dc <- string(i) + word + "." + tld
+			}
+		}
+		close(dc)
+	}()
+
+	return dc
+}
+
+func oneword(tlds []string) <-chan string {
+	dc := make(chan string)
+
+	go func() {
+		for _, i := range letters3() {
+			for _, tld := range tlds {
+				dc <- string(i) + "." + tld
 			}
 		}
 		close(dc)

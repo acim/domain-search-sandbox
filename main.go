@@ -15,7 +15,7 @@ const (
 )
 
 func main() {
-	data := oneword([]string{"sh"})
+	data := oneword([]string{"io"})
 
 	var wg sync.WaitGroup
 	for i := 0; i < concurrency; i++ {
@@ -71,7 +71,7 @@ func generator2(tld string) <-chan string {
 	go func() {
 		for _, i := range alphabet + numbers {
 			for _, j := range alphabet + numbers {
-				d := string(i) + string(j) + tld
+				d := string(i) + string(j) + "." + tld
 				dc <- d
 			}
 		}

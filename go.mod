@@ -1,3 +1,3 @@
 module github.com/acim/domain-search-sandbox
 
-go 1.13
+go 1.15

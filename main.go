@@ -8,14 +8,18 @@ import (
 )
 
 const (
-	concurrency = 10
-	alphabet    = "abcdefghijklmnopqrstuvwxyz"
-	numbers     = "0123456789"
-	// numbers = ""
+	concurrency    = 10
+	alphabet       = "abcdefghijklmnopqrstuvwxyz"
+	consonants     = "bcdfghjklmnpqrstvwxz"
+	niceConsonants = "bcdfghjklmnpqrstvxz"
+	vowels         = "aeiouy"
+	niceVowels     = "aeiou"
+	// numbers     = "0123456789"
+	numbers = ""
 )
 
 func main() {
-	data := prefixSuffix("code", "com")
+	data := prefixSuffix("bit", "com")
 
 	var wg sync.WaitGroup
 	for i := 0; i < concurrency; i++ {
@@ -95,7 +99,6 @@ func generator3(tlds []string) <-chan string {
 				}
 			}
 		}
-		close(dc)
 	}()
 
 	return dc
@@ -117,7 +120,7 @@ func short(word string, tlds ...string) <-chan string {
 	return dc
 }
 
-func short2(word string, tlds []string) <-chan string {
+func short2(word string, tlds ...string) <-chan string {
 	dc := make(chan string)
 
 	go func() {
@@ -126,7 +129,7 @@ func short2(word string, tlds []string) <-chan string {
 				for _, tld := range tlds {
 					// dc <- word + string(i) + string(j) + "." + tld
 					dc <- string(i) + string(j) + word + "." + tld
-					dc <- string(i) + word + string(j) + "." + tld
+					// dc <- string(i) + word + string(j) + "." + tld
 				}
 			}
 		}
@@ -140,13 +143,41 @@ func short3(suffix string, tlds ...string) <-chan string {
 	dc := make(chan string)
 
 	go func() {
-		for _, i := range alphabet + numbers {
-			for _, j := range alphabet + numbers {
-				// for _, k := range alphabet + numbers {
-				for _, tld := range tlds {
-					dc <- fmt.Sprintf("%s%s%s.%s", string(i), string(j), suffix, tld)
+		for _, tld := range tlds {
+			for _, i := range vowels {
+				for _, j := range consonants {
+					for _, k := range vowels {
+						dc <- fmt.Sprintf("%s%s%s%s.%s", string(i), string(j), string(k), suffix, tld)
+					}
 				}
-				// }
+			}
+			for _, i := range consonants {
+				for _, j := range vowels {
+					for _, k := range consonants {
+						dc <- fmt.Sprintf("%s%s%s%s.%s", string(i), string(j), string(k), suffix, tld)
+					}
+				}
+			}
+		}
+		close(dc)
+	}()
+
+	return dc
+}
+
+func short4(suffix string, tlds ...string) <-chan string {
+	dc := make(chan string)
+
+	go func() {
+		for _, tld := range tlds {
+			for _, i := range niceVowels {
+				for _, j := range niceConsonants {
+					for _, k := range niceConsonants {
+						for _, l := range niceVowels {
+							dc <- fmt.Sprintf("%s%s%s%s%s.%s", string(i), string(j), string(k), string(l), suffix, tld)
+						}
+					}
+				}
 			}
 		}
 		close(dc)
@@ -159,9 +190,9 @@ func twowords(word string, tlds ...string) <-chan string {
 	dc := make(chan string)
 
 	go func() {
-		for _, i := range letters3() {
+		for _, i := range letters4() {
 			for _, tld := range tlds {
-				dc <- word + string(i) + "." + tld
+				// dc <- word + string(i) + "." + tld
 				dc <- string(i) + word + "." + tld
 			}
 		}

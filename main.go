@@ -10,12 +10,12 @@ import (
 const (
 	concurrency = 10
 	alphabet    = "abcdefghijklmnopqrstuvwxyz"
-	// numbers     = "0123456789"
-	numbers = ""
+	numbers     = "0123456789"
+	// numbers = ""
 )
 
 func main() {
-	data := oneword([]string{"io"})
+	data := prefixSuffix("code", "com")
 
 	var wg sync.WaitGroup
 	for i := 0; i < concurrency; i++ {
@@ -101,7 +101,7 @@ func generator3(tlds []string) <-chan string {
 	return dc
 }
 
-func short(word string, tlds []string) <-chan string {
+func short(word string, tlds ...string) <-chan string {
 	dc := make(chan string)
 
 	go func() {
@@ -117,15 +117,17 @@ func short(word string, tlds []string) <-chan string {
 	return dc
 }
 
-func short2(word string, tld string) <-chan string {
+func short2(word string, tlds []string) <-chan string {
 	dc := make(chan string)
 
 	go func() {
 		for _, i := range alphabet + numbers {
 			for _, j := range alphabet + numbers {
-				dc <- word + string(i) + string(j) + tld
-				dc <- string(i) + string(j) + word + tld
-				dc <- string(i) + word + string(j) + tld
+				for _, tld := range tlds {
+					// dc <- word + string(i) + string(j) + "." + tld
+					dc <- string(i) + string(j) + word + "." + tld
+					dc <- string(i) + word + string(j) + "." + tld
+				}
 			}
 		}
 		close(dc)
@@ -134,11 +136,30 @@ func short2(word string, tld string) <-chan string {
 	return dc
 }
 
-func twowords(word string, tlds []string) <-chan string {
+func short3(suffix string, tlds ...string) <-chan string {
 	dc := make(chan string)
 
 	go func() {
-		for _, i := range letters5() {
+		for _, i := range alphabet + numbers {
+			for _, j := range alphabet + numbers {
+				// for _, k := range alphabet + numbers {
+				for _, tld := range tlds {
+					dc <- fmt.Sprintf("%s%s%s.%s", string(i), string(j), suffix, tld)
+				}
+				// }
+			}
+		}
+		close(dc)
+	}()
+
+	return dc
+}
+
+func twowords(word string, tlds ...string) <-chan string {
+	dc := make(chan string)
+
+	go func() {
+		for _, i := range letters3() {
 			for _, tld := range tlds {
 				dc <- word + string(i) + "." + tld
 				dc <- string(i) + word + "." + tld
@@ -150,13 +171,32 @@ func twowords(word string, tlds []string) <-chan string {
 	return dc
 }
 
-func oneword(tlds []string) <-chan string {
+func oneword(tlds ...string) <-chan string {
 	dc := make(chan string)
 
 	go func() {
 		for _, i := range letters3() {
 			for _, tld := range tlds {
 				dc <- string(i) + "." + tld
+			}
+		}
+		close(dc)
+	}()
+
+	return dc
+}
+
+func prefixSuffix(word string, tlds ...string) <-chan string {
+	dc := make(chan string)
+
+	go func() {
+		for _, tld := range tlds {
+			for _, i := range prefix() {
+				dc <- string(i) + word + "." + tld
+			}
+			for _, i := range suffix() {
+
+				dc <- word + string(i) + "." + tld
 			}
 		}
 		close(dc)

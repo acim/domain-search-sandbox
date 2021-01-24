@@ -19,7 +19,7 @@ const (
 )
 
 func main() {
-	data := short("k8s", domains()...)
+	data := twowords("moto", "eu")
 
 	var wg sync.WaitGroup
 	for i := 0; i < concurrency; i++ {

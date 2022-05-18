@@ -1,5 +1,7 @@
 # domain-search-sandbox
 
+[![License](https://img.shields.io/badge/license-BSD--2--Clause--Patent-orange.svg)](https://github.com/acim/domain-search-sandbox/blob/main/LICENSE)
+
 Small Go utilitiy to search for available domains
 
 - uses simple DNS queries to check if domain may be unregistered
